@@ -15,7 +15,7 @@ os.makedirs(PERSIST_DIR, exist_ok=True)
 
 # Configurar página
 st.set_page_config(
-    page_title="CatchAI – Copiloto de Documentos",
+    page_title="Prueba para CatchAI – Copiloto de Documentos",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
