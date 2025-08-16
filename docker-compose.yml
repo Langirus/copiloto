@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    env_file: .env
+    ports:
+      - "8501:8501"   # o 8611:8501 si prefieres
+    volumes:
+      - ./data:/app/data
+      - ./app:/app/app
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+    command: ["python", "-m", "streamlit", "run", "app/main.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    restart: unless-stopped
+
+
