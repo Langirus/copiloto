@@ -1,4 +1,4 @@
-# 🧠 CatchAI – Copiloto Conversacional sobre Documentos
+# 🧠 Prueba para CatchAI – Copiloto Conversacional sobre Documentos
 
 Un copiloto conversacional inteligente que permite analizar y hacer preguntas sobre múltiples documentos PDF usando IA avanzada.
 
@@ -205,4 +205,3 @@ def fragmentar_documentos(paginas_texto, tamaño_fragmento=900, superposicion_fr
 
 
 
-**🧠 CatchAI** - Transformando la forma de interactuar con documentos usando IA conversacional.
