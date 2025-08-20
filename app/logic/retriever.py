@@ -2,12 +2,39 @@ import os
 from google import genai
 from google.genai import types
 from langchain_community.vectorstores import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
 from .prompts import PROMPT_SISTEMA, PROMPT_PREGUNTA_RESPUESTA
 import logging
+import torch
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Variable global para el modelo de embeddings (evitar múltiples cargas)
+_embeddings_model = None
+
+def _get_embeddings_model():
+    """Obtiene o crea el modelo de embeddings (singleton pattern)."""
+    global _embeddings_model
+    if _embeddings_model is None:
+        try:
+            modelo_embedding = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+            
+            # Configurar device para evitar problemas de tensores meta
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            
+            _embeddings_model = HuggingFaceEmbeddings(
+                model_name=modelo_embedding,
+                model_kwargs={'device': device},
+                encode_kwargs={'device': device}
+            )
+            
+            logger.info(f"Modelo de embeddings cargado en {device}")
+        except Exception as e:
+            logger.error(f"Error cargando modelo de embeddings: {e}")
+            raise
+    return _embeddings_model
 
 def _cliente():
     """Inicializa el cliente de Google Gemini."""
@@ -24,19 +51,34 @@ def _cliente():
 def cargar_almacen_vectores(directorio_persistencia: str):
     """Carga el almacén de vectores existente."""
     try:
-        from langchain_community.embeddings import HuggingFaceEmbeddings
-        modelo_embedding = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-        embeddings = HuggingFaceEmbeddings(model_name=modelo_embedding)
+        embeddings = _get_embeddings_model()
         
-        av = Chroma(collection_name="catchai_docs", 
-                    embedding_function=embeddings,
-                    persist_directory=directorio_persistencia)
+        # Crear el almacén de vectores con configuración más robusta
+        av = Chroma(
+            collection_name="catchai_docs", 
+            embedding_function=embeddings,
+            persist_directory=directorio_persistencia
+        )
         
         # Verificar que el almacén de vectores tenga contenido
-        coleccion = av._collection
-        if coleccion.count() == 0:
-            logger.warning("Almacén de vectores vacío - no hay documentos indexados")
-            return None
+        try:
+            coleccion = av._collection
+            if coleccion.count() == 0:
+                logger.warning("Almacén de vectores vacío - no hay documentos indexados")
+                return None
+        except Exception as e:
+            logger.warning(f"No se pudo verificar el conteo de la colección: {e}")
+            # Intentar crear una nueva colección si hay problemas
+            try:
+                av = Chroma(
+                    collection_name="catchai_docs", 
+                    embedding_function=embeddings,
+                    persist_directory=directorio_persistencia
+                )
+                logger.info("Nueva colección creada exitosamente")
+            except Exception as e2:
+                logger.error(f"Error creando nueva colección: {e2}")
+                return None
             
         return av
     except Exception as e:

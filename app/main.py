@@ -251,7 +251,7 @@ with col2:
 
 # Pie de página
 st.markdown("---")
-st.caption("🧠 **CatchAI** - Modelo: Gemini 1.5 Flash + Embeddings open-source + ChromaDB")
+st.caption("🧠 **AI Gemini** - Modelo: Gemini 2.0 Flash + Embeddings open-source + ChromaDB")
 st.caption("💡 **Consejo:** Usa preguntas específicas para obtener respuestas más precisas")
 
 # Mostrar estado del sistema

@@ -181,6 +181,67 @@ def fragmentar_documentos(paginas_texto, tamaño_fragmento=900, superposicion_fr
 - Usa archivos PDF más pequeños
 - Limpia el almacén de vectores y vuelve a procesar
 
+### ⚠️ Errores Comunes y Soluciones
+
+#### 1. Error de LangChain Deprecation
+```
+LangChainDeprecationWarning: The class `HuggingFaceEmbeddings` was deprecated
+```
+**Solución**: Ya está corregido en la versión actual. Si persiste, ejecuta:
+```bash
+docker-compose down
+docker-compose up --build
+```
+
+#### 2. Error de ChromaDB Tenant
+```
+Error cargando almacén de vectores: Could not connect to tenant default_tenant
+```
+**Solución**: 
+```bash
+# Limpiar datos existentes
+docker-compose down
+rm -rf data/
+docker-compose up --build
+```
+
+#### 3. Error de PyTorch Meta Tensor
+```
+Cannot copy out of meta tensor; no data! Please use torch.nn.Module.to_empty()
+```
+**Solución**: Ya está corregido. El modelo se carga correctamente en CPU/GPU.
+
+#### 4. Múltiples Cargas del Modelo
+**Solución**: Implementado patrón singleton para evitar cargas múltiples.
+
+#### 5. Problemas de Dependencias
+Si encuentras errores de librerías:
+```bash
+# Reconstruir completamente
+docker-compose down
+docker system prune -f
+docker-compose up --build
+```
+
+### 🔧 Comandos de Diagnóstico
+
+```bash
+# Ver logs detallados
+docker-compose logs -f app
+
+# Verificar estado de contenedores
+docker-compose ps
+
+# Reconstruir sin cache
+docker-compose build --no-cache
+
+# Limpiar completamente y reinstalar
+docker-compose down
+docker system prune -f
+docker volume prune -f
+docker-compose up --build
+```
+
 ## 📊 Rendimiento
 
 ### Límites Recomendados
