@@ -242,6 +242,50 @@ docker volume prune -f
 docker-compose up --build
 ```
 
+### 🐳 Problemas de Docker - Solución Completa
+
+Si después de ejecutar `docker-compose up --build` tienes problemas con Docker, sigue estos pasos en orden:
+
+#### **Paso 1: Navegar al directorio correcto**
+```bash
+# Asegúrate de estar en el directorio del proyecto
+cd copiloto-main
+# O el nombre de tu directorio del proyecto
+```
+
+#### **Paso 2: Limpieza completa de Docker**
+```bash
+# Detener y eliminar contenedores
+docker-compose down
+
+# Eliminar también las imágenes
+docker-compose down --rmi all
+
+# Limpiar todo Docker (contenedores, imágenes, volúmenes, redes)
+docker system prune -a --volumes
+
+# Confirmar la limpieza cuando te pregunte (escribir 'y' y Enter)
+```
+
+#### **Paso 3: Reconstruir desde cero**
+```bash
+# Reconstruir y ejecutar
+docker-compose up --build
+```
+
+#### **Si persisten los problemas:**
+```bash
+# Reiniciar Docker Desktop completamente
+# Luego ejecutar:
+docker-compose up --build --force-recreate
+```
+
+#### **Para problemas de permisos en Windows:**
+```bash
+# Ejecutar PowerShell como Administrador
+# Luego ejecutar los comandos de Docker
+```
+
 ## 📊 Rendimiento
 
 ### Límites Recomendados
